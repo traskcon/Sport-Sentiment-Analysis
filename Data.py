@@ -1,4 +1,9 @@
 import praw
+import datetime as dt
+
+def get_date(submission):
+    time = submission.created
+    return dt.datetime.fromtimestamp(time)
 
 reddit = praw.Reddit(
     client_id = "",
@@ -27,6 +32,5 @@ for team in league_teams["NFL"]:
     # Obtain 100 newest posts
     for post in subreddit.new(limit=100):
         all_comments = post.comments.list()
-        print(len(all_comments))
-        break
+        print(get_date(all_comments[0]))
     break
