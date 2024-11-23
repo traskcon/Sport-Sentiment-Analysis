@@ -60,13 +60,14 @@ league_subreddits = {"NFL":["nfl"],
                      "WNBA":["wnba"]}
 
 
-with open("reddit_data.csv", "w", newline="", encoding="utf-8") as csv_file:
+with open("reddit_data_mlb.csv", "w", newline="", encoding="utf-8") as csv_file:
     writer = csv.writer(csv_file, delimiter=",")
-    for team in league_teams["NFL"]:
+    for team in league_teams["MLB"]:
+        print(team)
         # Obtain subreddit instance
         subreddit = reddit.subreddit(team)
         # Obtain 100 newest posts
-        for post in tqdm(subreddit.new(limit=100)):
+        for post in tqdm(subreddit.new(limit=20)):
             all_comments = post.comments.list()
             # comment.body returns the raw text of the comment
             # Use get_date function to extract timestep of comment
