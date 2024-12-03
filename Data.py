@@ -1,3 +1,5 @@
+'''Extract data from Team Subreddits via Reddit API
+Perform rudimentary text cleaning and then save to csv files for sentiment analysis'''
 import praw
 import datetime as dt
 import pandas as pd

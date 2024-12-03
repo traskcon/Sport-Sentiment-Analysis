@@ -1,3 +1,6 @@
+'''Build LSTM model in Keras and train on Sentiment140 dataset
+Training sentiment scores are 0 (negative) and 4 (positive)
+LSTM acts as regressor, not classifier'''
 import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 import nltk
