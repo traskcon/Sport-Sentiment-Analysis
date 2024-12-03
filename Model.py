@@ -1,6 +1,6 @@
 '''Build LSTM model in Keras and train on Sentiment140 dataset
-Training sentiment scores are 0 (negative) and 4 (positive)
-LSTM acts as regressor, not classifier'''
+Training sentiment scores are 0 (negative), 2 (neutral), 4 (positive)
+As a result, LSTM acts as regressor, not classifier'''
 import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 import nltk
@@ -88,7 +88,7 @@ def build_model(train_comments):
                 metrics=['mse'])
     return model
 
-sentiment_data = pd.read_csv("training.1600000.processed.noemoticon.csv", names=["sentiment","id","date","query","user","comment"])
+'''sentiment_data = pd.read_csv("training.1600000.processed.noemoticon.csv", names=["sentiment","id","date","query","user","comment"])
 cleaned_data = preprocess_data(sentiment_data)
 #data_summary(cleaned_data)
 comments = cleaned_data["comment"].values
@@ -97,4 +97,4 @@ train_comments, test_comments, train_labels, test_labels = train_test_split(comm
 model = build_model(train_comments)
 model.fit(train_comments, train_labels, epochs=3)
 model.save("initial_model.keras")
-print(model.summary())
+print(model.summary())'''
