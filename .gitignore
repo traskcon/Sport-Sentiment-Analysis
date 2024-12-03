@@ -1,5 +1,8 @@
 client_details.txt
 reddit_data.csv
+reddit_data_nfl.csv
 training.1600000.processed.noemoticon.csv
 reddit_data_mlb.csv
 reddit_data_nba.csv
+reddit_data_nwsl.csv
+reddit_data_wnba.csv
