@@ -80,3 +80,13 @@ def extract_reddit_comments(league, reddit):
                         writer.writerow(data)
                     except:
                         continue
+
+league_names = ["mlb","nba","nfl","nhl","nwsl","wnba"]
+frames = []
+for league in league_names:
+    frame = pd.read_csv("reddit_data_"+league+".csv", names=["team","id","date","comment"])
+    frame["league"] = league
+    frames.append(frame)
+
+unified = pd.concat(frames)
+unified.to_csv("reddit_data.csv",index=False)
