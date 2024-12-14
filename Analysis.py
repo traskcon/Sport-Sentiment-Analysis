@@ -6,10 +6,18 @@ from Model import preprocess_data
 import pandas as pd
 import matplotlib.pyplot as plt
 import keras
+import pickle
 
-model = keras.models.load_model("initial_model.keras")
-data = pd.read_csv("reddit_data_nhl.csv", names=["team","id","timestamp","comment"])
+model = keras.saving.load_model("glove_model.keras")
+with open('logistic-classifier.pkl', 'rb') as f:
+    clf = pickle.load(f)
+print(model.summary())
+
+'''data = pd.read_csv("reddit_data.csv")
 cleaned_data = preprocess_data(data)
 data["predicted sentiment"] = model.predict(cleaned_data["comment"])
-plt.hist(data["predicted sentiment"])
-plt.show()
+plt.hist(data["predicted sentiment"], bins=40)
+plt.xlabel("Predicted Sentiment Score")
+plt.ylabel("Number of Messages")
+plt.title("Sentiment Distribution across Sports Subreddits")
+plt.show()'''
