@@ -7,3 +7,9 @@ reddit_data_mlb.csv
 reddit_data_nba.csv
 reddit_data_nwsl.csv
 reddit_data_wnba.csv
+glove.twitter.27B.50d.txt
+clean_training_data.csv
+x_train.npy
+x_test.npy
+test-labels.npy
+train-labels.npy
