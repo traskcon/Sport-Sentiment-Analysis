@@ -12,8 +12,6 @@ import pandas as pd
 import numpy as np
 import re
 import keras
-from keras_preprocessing.text import Tokenizer
-from sklearn.linear_model import LogisticRegression
 
 
 ## DATA PRE-PROCESSING FUNCTIONS
