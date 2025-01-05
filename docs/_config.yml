@@ -1,3 +1,6 @@
-theme: jekyll-theme-minimal
 title: Sport Sentiment Analysis
+logo: /assets/img/logo.png
 description: Live Sentiment Tracker for major sport league subreddits
+show_downloads: true
+google_analytics:
+theme: jekyll-theme-minimal
