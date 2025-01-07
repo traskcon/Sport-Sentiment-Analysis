@@ -14,6 +14,8 @@ import re
 import csv
 import praw
 from tqdm import tqdm
+import sys
+import time
 
 ## Function Definitions ########################################
 def get_date(submission):
@@ -56,7 +58,7 @@ def most_recent_posts():
     data = pd.read_csv("reddit_data.csv")
     for team in pd.unique(data["team"]):
         team_posts = data[data["team"] == team]
-        last_posts[team] = max(team_posts["date"])
+        last_posts[team.lower()] = dt.datetime.strptime(max(team_posts["date"]), "%Y-%m-%d %H:%M:%S")
     return last_posts
 
 def extract_reddit_comments(league, reddit, last_posts):
@@ -64,20 +66,21 @@ def extract_reddit_comments(league, reddit, last_posts):
     filename = "reddit_data.csv"
     with open(filename, "a+", newline="", encoding="utf-8") as csv_file:
         writer = csv.writer(csv_file, delimiter=",")
-        for team in league_teams[league]:
-            team_post_date = last_posts[team]
-            subreddit = reddit.subreddit(team)
-            for post in tqdm(subreddit.new(limit=20)):
-                if get_date(post) > team_post_date:
-                    all_comments = post.comments.list()
-                    # comment.body returns the raw text of the comment
-                    # comment.id is a unique identifier for the comment
-                    for comment in all_comments:
-                        try:
-                            data = [team, comment.id, get_date(comment), make_safe_string(comment.body), league]
-                            writer.writerow(data)
-                        except:
-                            continue
+        # Rewrote scraper to scrape all of a teams subreddits simulataneously instead of in serial
+        league_subs = "+".join(league_teams[league])
+        subreddit = reddit.subreddit(league_subs)
+        for post in tqdm(subreddit.new(limit=600)):
+            team = post.subreddit.display_name.lower()
+            if get_date(post) > last_posts[team]:
+                all_comments = post.comments.list()
+                # comment.body returns the raw text of the comment
+                # comment.id is a unique identifier for the comment
+                for comment in all_comments:
+                    try:
+                        data = [team, comment.id, get_date(comment), make_safe_string(comment.body), league]
+                        writer.writerow(data)
+                    except:
+                        continue
 
 ## END FUNCTION DEFINITIONS #########################################
 
@@ -86,13 +89,13 @@ def extract_reddit_comments(league, reddit, last_posts):
 reddit = praw.Reddit(
     client_id = "",
     client_secret = "",
-    user_agent = "Sentiment-Analysis",
+    user_agent = "Sentiment-Analysis:v1.0 (by /u/GeniusNinja01)",
     ratelimit_seconds = 600
 )
 # Without username and password this is just a read-only agent
 
-league_teams = {"NFL":["detroitlions","patriots","losangelesrams","eagles","greenbaypackers","cowboys","steelers","49ers","seahawks","minnesotavikings","chibears","falcons","kansascitychiefs","browns","ravens","denverbroncos","nygiants","washingtonnfl","buffalobills","saints","buccaneers","miamidolphins","bengals","nyjets","panthers","azcardinals","texans","colts","tennesseetitans","chargers","jaguars","raiders"],
-                "NHL":["leafs","hawks","detroitredwings","penguins","canucks","bostonbruins","flyers","habs","sanjosesharks","caps","newyorkislanders","wildhockey","rangers","devils","bluejackets","tampabaylightning","edmontonoilers","coloradoavalanche","stlouisblues","goldenknights","anaheimducks","winnipegjets","predators","canes","sabres","calgaryflames","losangeleskings","ottawasenators","dallasstars","coyotes","floridapanthers","SeattleNHL"],
+league_teams = {"NFL":["detroitlions","patriots","losangelesrams","eagles","greenbaypackers","cowboys","steelers","49ers","seahawks","minnesotavikings","chibears","falcons","kansascitychiefs","browns","ravens","denverbroncos","nygiants","commanders","buffalobills","saints","buccaneers","miamidolphins","bengals","nyjets","panthers","azcardinals","texans","colts","tennesseetitans","chargers","jaguars","raiders"],
+                "NHL":["leafs","hawks","detroitredwings","penguins","canucks","bostonbruins","flyers","habs","sanjosesharks","caps","newyorkislanders","wildhockey","rangers","devils","bluejackets","tampabaylightning","edmontonoilers","coloradoavalanche","stlouisblues","goldenknights","anaheimducks","winnipegjets","predators","canes","sabres","calgaryflames","losangeleskings","ottawasenators","dallasstars","utahhockey","floridapanthers","SeattleKraken"],
                 "NBA":["warriors","lakers","bostonceltics","torontoraptors","sixers","chicagobulls","rockets","NYKnicks","clevelandcavs","Thunder","MkeBucks","mavericks","NBASpurs","timberwolves","washingtonwizards","UtahJazz","ripcity","suns","kings","heat","denvernuggets","AtlantaHawks","GoNets","OrlandoMagic","DetroitPistons","LAclippers","pacers","charlotteHornets","NOLAPelicans","memphisgrizzlies"],
                 "MLB":["MiamiMarlins","azdiamondbacks","coloradoRockies","buccos","tampabayrays","KcRoyals","TexasRangers","OaklandAthletics","motorcitykitties","Reds","clevelandGuardians","Brewers","angelsbaseball","Nationals","whitesox","minnesotatwins","Padres","Mariners","orioles","NewYorkMets","cHIcubs","cardinals","phillies","Astros","SFGiants","Braves","Torontobluejays","Dodgers","redsox","NYYankees"],
                 "NWSL":["AngelcityFc","BayFc","RedStars","Dash","Kccurrent","GothamFc","Nccourage","ReignFc","OrlandoPride","Thorns","RacingLouisvilleFc","SanDiegoWaveFc","UtahRoyalsFc","WashingtonSpirit"],
@@ -108,6 +111,7 @@ league_subreddits = {"NFL":["nfl"],
 last_posts = most_recent_posts()
 for league in league_teams.keys():
     extract_reddit_comments(league, reddit, last_posts)
+    time.sleep(60)
 
 data = pd.read_csv("reddit_data.csv")    
 cleaned_data = preprocess_data(data)
